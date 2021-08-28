@@ -55,7 +55,7 @@ public class RestAssTest implements Serializable {
         Response response = RestAssured.get(URI+PATHTOKEN);
         //System.out.println(response.asString());
         Assertions.assertNotNull(response,"Ссылка никуда не ведет");
-        System.out.println("");
+        System.out.println(" ");
     }
 
 
@@ -68,6 +68,7 @@ public class RestAssTest implements Serializable {
         symbols =symbolJson.getList("$",Symbol.class);
         symbols.stream().limit(10).forEach(System.out::println);
         Assertions.assertNotNull(symbols,"Список пустой");
+        System.out.println(" test");
     }
 
 

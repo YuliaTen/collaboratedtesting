@@ -19,6 +19,6 @@ public class Symbol {
     @Override
     public String toString() {
         return
-          "symbol= " + symbol + ", name= " + name + ", price= " + price +     ", exchange= " + exchange;
+          "symbol=  " + symbol + ", name= " + name + ", price= " + price +     ", exchange= " + exchange;
     }
 }
