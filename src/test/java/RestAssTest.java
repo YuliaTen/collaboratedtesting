@@ -1,6 +1,5 @@
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
-import io.restassured.internal.common.assertion.Assertion;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.hamcrest.Matchers;
@@ -8,7 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,7 +34,6 @@ public class RestAssTest implements Serializable {
     @Test
     @DisplayName("Проверка корректности возвращаемых данных ")
     void testSymbolsList(){
-
         given()
                 .baseUri(URI)
                 .basePath(PATH)
@@ -55,9 +53,7 @@ public class RestAssTest implements Serializable {
         Response response = RestAssured.get(URI+PATHTOKEN);
         //System.out.println(response.asString());
         Assertions.assertNotNull(response,"Ссылка никуда не ведет");
-        System.out.println(" ");
     }
-
 
     @Test
     @DisplayName("Проверка того,что мы можем получить данные из JSon ")
@@ -71,7 +67,41 @@ public class RestAssTest implements Serializable {
         System.out.println(" test");
     }
 
+    @ParameterizedTest
+    @MethodSource("dataProvider")
+    @DisplayName("Проверка токена ")
+    void tokenTest(String tokenTest,String statusTest,String headerTest,String inside){
+        given()
+                .baseUri(URI)
+                .basePath(PATH)
+                .header(new Header("Content-Type", "application/json"))
+                .log().all()
+                .queryParam("apikey", tokenTest)
+                .when().get("/list")
+                .then().log().ifError()
+                .header(headerTest,inside)
+                //.header("Vary", varyTest)
+                .statusCode(Integer.parseInt(statusTest));
 
+
+    }
+
+    public static List<String[]> dataProvider(){
+        //Даем неверный токен и по длине контента , которой не бывает в работающей ссылке проверяем негативный тест
+        String[] strings1 = new String[]{"1111f","200","Content-Length","146"};
+        // Даем верный токен и наполнение
+        String[] strings2 = new String[]{TOKEN,"200","Content-Encoding","gzip"};
+        List<String[]> list =  List.of(strings1, strings2);
+        return list;
+    }
+
+    @Test
+    @DisplayName("Проверка статус кода")
+    void statusCodeTest(){
+        Response response =RestAssured.get(URI+PATHTOKEN);
+        Assertions.assertEquals(200,response.statusCode(),"Неожиданный статус код");
+
+    }
 
 
 }
